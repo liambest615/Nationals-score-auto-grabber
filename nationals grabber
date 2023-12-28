@@ -1,0 +1,36 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+# Set the URL for the ESPN website
+url = "https://www.espn.com/mlb/team/schedule/_/name/was/washington-nationals"
+
+# Send a request to the website and get the HTML response
+response = requests.get(url)
+
+# Parse the HTML content using Beautiful Soup
+soup = BeautifulSoup(response.content, "html.parser")
+
+# Find the table containing the box scores
+table = soup.find("table", {"class": "Table2__table"})
+
+# Extract the rows from the table
+rows = table.find_all("tr")
+
+# Create a list to store the box scores
+box_scores = []
+
+# Iterate over the rows and extract the box scores
+for row in rows:
+    # Get the team name and score
+    team = row.find("td", {"class": "Table2__team"}).text.strip()
+    score = row.find("td", {"class": "Table2__score"}).text.strip()
+
+    # Add the box score to the list
+    box_scores.append({"team": team, "score": score})
+
+# Convert the list to a Pandas DataFrame
+df = pd.DataFrame(box_scores)
+
+# Print the DataFrame
+print(df)
